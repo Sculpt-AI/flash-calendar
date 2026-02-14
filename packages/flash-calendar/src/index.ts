@@ -31,8 +31,23 @@ export {
 
 export {
   WeeklyCalendar,
+  type WeeklyCalendarRef,
   type WeeklyCalendarProps,
   type WeeklyCalendarDayRenderProps,
   type WeeklyCalendarWeekRenderProps,
   type WeeklyCalendarTheme,
 } from "./components/WeeklyCalendar";
+
+export {
+  useDayStrip,
+  type UseDayStripParams,
+  type UseDayStripReturn,
+} from "./hooks/useDayStrip";
+
+export {
+  DayStripCalendar,
+  type DayStripCalendarProps,
+  type DayStripCalendarRef,
+  type DayStripCalendarTheme,
+  type DayStripDayRenderProps,
+} from "./components/DayStripCalendar";
