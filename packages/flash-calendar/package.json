@@ -1,14 +1,17 @@
 {
-  "name": "@marceloterreiro/flash-calendar",
-  "version": "1.6.0",
+  "name": "@sculpt-ai/flash-calendar",
+  "version": "1.0.4",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "private": false,
-  "description": "A better calendar for React Native.",
+  "description": "Sculpt AI fork of @marceloterreiro/flash-calendar.",
   "repository": {
     "type": "git",
-    "url": "github.com/marceloprado/flash-calendar",
+    "url": "git+https://github.com/Sculpt-AI/flash-calendar.git",
     "directory": "packages/flash-calendar"
   },
-  "homepage": "https://marceloprado.github.io/flash-calendar/",
+  "homepage": "https://github.com/Sculpt-AI/flash-calendar",
   "license": "MIT",
   "author": "Marcelo Prado",
   "main": "./dist/index.js",
