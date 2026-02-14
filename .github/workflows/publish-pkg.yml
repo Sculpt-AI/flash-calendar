@@ -6,6 +6,7 @@ on:
       - custom/sculpt
     paths:
       - "packages/flash-calendar/**"
+      - ".github/workflows/publish-pkg.yml"
 
 jobs:
   publish:
