@@ -22,3 +22,17 @@ export {
 } from "./hooks/useOptimizedDayMetadata";
 
 export { useDateRange } from "./hooks/useDateRange";
+
+export {
+  useWeeklyCalendar,
+  type UseWeeklyCalendarParams,
+  type UseWeeklyCalendarReturn,
+} from "./hooks/useWeeklyCalendar";
+
+export {
+  WeeklyCalendar,
+  type WeeklyCalendarProps,
+  type WeeklyCalendarDayRenderProps,
+  type WeeklyCalendarWeekRenderProps,
+  type WeeklyCalendarTheme,
+} from "./components/WeeklyCalendar";
