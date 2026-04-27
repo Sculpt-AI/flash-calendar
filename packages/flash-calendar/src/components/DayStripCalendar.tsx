@@ -5,11 +5,17 @@ import {
   forwardRef,
   memo,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
 } from "react";
-import type { ViewStyle, TextStyle } from "react-native";
+import type {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import {
   Dimensions,
   Pressable,
@@ -208,7 +214,20 @@ export const DayStripCalendar = memo(
       });
 
       const itemSize = dayWidth + daySpacing;
-      const centerPadding = (screenWidth - dayWidth) / 2;
+      // Each item is wrapped with marginHorizontal: daySpacing/2, so the
+      // item's content starts daySpacing/2 after the contentContainer padding.
+      // Subtract daySpacing here so the centered cell's content lines up with
+      // the viewport center exactly.
+      const centerPadding = (screenWidth - dayWidth - daySpacing) / 2;
+
+      const lastReportedDateIdRef = useRef<string | null>(null);
+      const hasCenteredOnLoadRef = useRef(false);
+      // Distinguish user-initiated scrolls from the initial positioning
+      // (initialScrollIndex + onLoad re-center). On iOS the initial layout
+      // can fire onMomentumScrollEnd with an offset that's offset-by-padding
+      // from the true center, causing a spurious onDayChanged for a day
+      // several items away from the actually-selected one.
+      const userIsDraggingRef = useRef(false);
 
       useImperativeHandle(ref, () => ({
         scrollToDate(dateId: string, animated = true) {
@@ -222,6 +241,64 @@ export const DayStripCalendar = memo(
           }
         },
       }));
+
+      // Keep the "last reported" tracker in sync with externally-driven changes
+      // so a subsequent user scroll that lands back on the current selection
+      // doesn't fire a redundant onDayChanged.
+      useEffect(() => {
+        lastReportedDateIdRef.current = selectedDateId;
+      }, [selectedDateId]);
+
+      const reportCenterDay = useCallback(
+        (offsetX: number) => {
+          if (!onDayChanged) return;
+          const centerIndex = Math.round(offsetX / itemSize);
+          if (centerIndex < 0 || centerIndex >= dayList.length) return;
+          const newDateId = dayList[centerIndex].id;
+          if (newDateId === lastReportedDateIdRef.current) return;
+          lastReportedDateIdRef.current = newDateId;
+          onDayChanged(newDateId);
+        },
+        [onDayChanged, itemSize, dayList]
+      );
+
+      const handleScrollBeginDrag = useCallback(() => {
+        userIsDraggingRef.current = true;
+      }, []);
+
+      // Only fire onDayChanged once the scroll has settled on its snap target,
+      // AND only when the scroll was user-initiated. Without the drag guard
+      // the initial layout's onMomentumScrollEnd fires onDayChanged with the
+      // wrong index because `initialScrollIndex` aligns items at the start
+      // of the viewport, not the center.
+      const handleMomentumScrollEnd = useCallback(
+        (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+          if (!userIsDraggingRef.current) return;
+          userIsDraggingRef.current = false;
+          reportCenterDay(event.nativeEvent.contentOffset.x);
+        },
+        [reportCenterDay]
+      );
+
+      // FlashList's `initialScrollIndex` aligns at the start of the viewport,
+      // not the center. We layered `paddingHorizontal: centerPadding` to allow
+      // first/last cells to be center-able, but that means the initial
+      // contentOffset places `referenceIndex + ~3` at the actual screen center.
+      // `scrollToIndex({ viewPosition: 0.5 })` is unreliable when called from
+      // onLoad (the initial native scroll wins on iOS). scrollToOffset with the
+      // exact pixel value (idx * itemSize, since at that offset item `idx`'s
+      // content-center lines up with the viewport center) is deterministic.
+      const handleListLoad = useCallback(() => {
+        if (hasCenteredOnLoadRef.current) return;
+        const idx = dayList.findIndex((d) => d.id === selectedDateId);
+        if (idx >= 0 && flashListRef.current) {
+          flashListRef.current.scrollToOffset({
+            offset: idx * itemSize,
+            animated: false,
+          });
+          hasCenteredOnLoadRef.current = true;
+        }
+      }, [dayList, selectedDateId, itemSize]);
 
       const handleDayPress = useCallback(
         (dateId: string) => {
@@ -398,6 +475,9 @@ export const DayStripCalendar = memo(
               paddingHorizontal: centerPadding,
             }}
             extraData={selectedDateId}
+            onLoad={handleListLoad}
+            onScrollBeginDrag={handleScrollBeginDrag}
+            onMomentumScrollEnd={handleMomentumScrollEnd}
           />
         </View>
       );
