@@ -1,0 +1,49 @@
+name: Publish @sculpt-ai/flash-calendar
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/flash-calendar/**"
+      - ".github/workflows/publish-pkg.yml"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        working-directory: packages/flash-calendar
+        run: bun run build
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Check if version already published
+        id: version
+        working-directory: packages/flash-calendar
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "@sculpt-ai/flash-calendar@$VERSION" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "@sculpt-ai/flash-calendar@$VERSION already on npm - skipping publish"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        if: steps.version.outputs.published == 'false'
+        working-directory: packages/flash-calendar
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

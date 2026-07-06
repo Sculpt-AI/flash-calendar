@@ -1,7 +1,7 @@
 import {
   Calendar,
   useOptimizedDayMetadata,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import { Text } from "react-native";
 import type { CalendarItemDayWithContainerProps } from "@/components/CalendarItemDay";
 

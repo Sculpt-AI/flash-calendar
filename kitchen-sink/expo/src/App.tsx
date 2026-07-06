@@ -2,13 +2,14 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 import { CalendarDemo } from "./Calendar";
 import { CalendarListDemo } from "./CalendarList";
 import { BottomSheetCalendar } from "./BottomSheetCalendar";
 import { CalendarCustomFormatting } from "./CalendarCustomFormatting";
 import { ImperativeScrolling } from "./ImperativeScroll";
+import { WeeklyCalendarDemo } from "./WeeklyCalendarDemo";
 // import { SlowExampleAddressed } from "./SlowExampleAddressed";
 
 export default function App() {
@@ -33,7 +34,8 @@ export default function App() {
 
           {demo === "calendar" ? <CalendarDemo /> : <CalendarListDemo />}
         </View> */}
-        <ImperativeScrolling />
+        <WeeklyCalendarDemo />
+        {/* <ImperativeScrolling /> */}
         {/* <BottomSheetCalendar /> */}
         {/* <SlowExampleAddressed /> */}
       </SafeAreaView>

@@ -1,5 +1,5 @@
 import BottomSheet from "@gorhom/bottom-sheet";
-import { Calendar } from "@marceloterreiro/flash-calendar";
+import { Calendar } from "@sculpt-ai/flash-calendar";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useMemo, useRef } from "react";
 import { Platform, StyleSheet, View } from "react-native";

@@ -1,9 +1,9 @@
 import type {
   CalendarActiveDateRange,
   CalendarTheme,
-} from "@marceloterreiro/flash-calendar";
-import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
-import { loggingHandler } from "@marceloterreiro/flash-calendar/src/developer/loggginHandler";
+} from "@sculpt-ai/flash-calendar";
+import { Calendar, toDateId } from "@sculpt-ai/flash-calendar";
+import { loggingHandler } from "@sculpt-ai/flash-calendar/src/developer/loggginHandler";
 import { add, startOfMonth } from "date-fns";
 import { format } from "date-fns/fp";
 import { memo } from "react";

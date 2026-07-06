@@ -1,14 +1,14 @@
 import type {
   CalendarActiveDateRange,
   CalendarOnDayPress,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import {
   Calendar,
   fromDateId,
   toDateId,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import type { Meta } from "@storybook/react-native";
-import { add, sub } from "date-fns";
+import { add, formatDate, sub } from "date-fns";
 import { format } from "date-fns/fp";
 import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -21,12 +21,19 @@ import {
 } from "./WindowsXpCalendar";
 import { LinearCalendar } from "./LinearCalendar";
 import { DynamicFillerCalendar } from "./DynamicFillerCalendar";
+import type { WeeklyCalendarProps } from "./WeeklyCalendar";
+import { WeeklyCalendar } from "./WeeklyCalendar";
 
 const styles = StyleSheet.create({
   windowsXpBackground: {
     backgroundColor: windowsXpTokens.colors.background,
     padding: 12,
     flex: 1,
+  },
+  weeklyCalendarMonthText: {
+    padding: 16,
+    fontWeight: "600",
+    fontSize: 20,
   },
 });
 
@@ -79,7 +86,7 @@ export const WindowsXP = () => {
 
   return (
     <View style={styles.windowsXpBackground}>
-      <WindowsXpWindow title="@marceloterreiro/flash-calendar">
+      <WindowsXpWindow title="@sculpt-ai/flash-calendar">
         <Calendar.VStack justifyContent="flex-start" spacing={12}>
           <Text>
             This is a Windows's XP themed calendar, using the composable API
@@ -104,6 +111,33 @@ export const WindowsXP = () => {
           )}
         </Calendar.VStack>
       </WindowsXpWindow>
+    </View>
+  );
+};
+
+export const Weekly = () => {
+  const [selectedDateId, setSelectedDateId] = useState(toDateId(new Date()));
+  const [currentMonth, setCurrentMonth] = useState(
+    formatDate(new Date(), "MMMM")
+  );
+
+  const handleWeekChanged: WeeklyCalendarProps["onWeekChanged"] = (week) => {
+    if (week) {
+      const firstDay = week[0];
+      setCurrentMonth(formatDate(firstDay.date, "MMMM"));
+    }
+  };
+
+  return (
+    <View>
+      <Text style={styles.weeklyCalendarMonthText}>{currentMonth}</Text>
+      <WeeklyCalendar
+        calendarActiveDateRanges={[
+          { startId: selectedDateId, endId: selectedDateId },
+        ]}
+        onCalendarDayPress={setSelectedDateId}
+        onWeekChanged={handleWeekChanged}
+      />
     </View>
   );
 };
