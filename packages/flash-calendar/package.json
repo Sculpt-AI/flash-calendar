@@ -1,6 +1,6 @@
 {
   "name": "@sculpt-ai/flash-calendar",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -17,6 +17,10 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsup --dts",
     "typecheck": "tsc --noEmit",

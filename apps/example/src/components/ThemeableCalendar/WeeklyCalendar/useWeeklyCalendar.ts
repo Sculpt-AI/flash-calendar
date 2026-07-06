@@ -1,11 +1,11 @@
 import type {
   UseCalendarListParams,
   UseCalendarParams,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import {
   buildCalendar,
   useCalendarList,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import { useMemo } from "react";
 
 type WeeklyCalendarProps = Omit<UseCalendarParams, "calendarMonthId"> &

@@ -20,10 +20,10 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, "node_modules"),
 ];
 
-// Alias @marceloterreiro/flash-calendar to our local built package
+// Alias @sculpt-ai/flash-calendar to our local built package
 const originalResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === "@marceloterreiro/flash-calendar") {
+  if (moduleName === "@sculpt-ai/flash-calendar") {
     return {
       filePath: localFlashCalendarDist,
       type: "sourceFile",

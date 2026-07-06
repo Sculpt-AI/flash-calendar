@@ -1,9 +1,9 @@
-import type { CalendarListProps } from "@marceloterreiro/flash-calendar";
+import type { CalendarListProps } from "@sculpt-ai/flash-calendar";
 import {
   Calendar,
   toDateId,
   useDateRange,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import { useMemo } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 

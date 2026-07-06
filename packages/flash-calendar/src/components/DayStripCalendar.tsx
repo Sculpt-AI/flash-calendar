@@ -16,16 +16,10 @@ import type {
   TextStyle,
   ViewStyle,
 } from "react-native";
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { toDateId } from "@/helpers/dates";
-import type { CalendarActiveDateRange, CalendarDayMetadata } from "@/hooks/useCalendar";
+import type { CalendarDayMetadata } from "@/hooks/useCalendar";
 import { useDayStrip, type UseDayStripParams } from "@/hooks/useDayStrip";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -154,12 +148,7 @@ const DefaultDayCell = memo(function DefaultDayCell({
       ]}
     >
       {showWeekDayName && weekDayName && (
-        <Text
-          style={[
-            defaultStyles.weekDayNameText,
-            theme?.weekDayNameText,
-          ]}
-        >
+        <Text style={[defaultStyles.weekDayNameText, theme?.weekDayNameText]}>
           {weekDayName}
         </Text>
       )}
@@ -323,14 +312,22 @@ export const DayStripCalendar = memo(
       );
 
       const renderItem = useCallback(
-        ({ item: day, index }: { item: CalendarDayMetadata; index: number }) => {
+        ({
+          item: day,
+          index,
+        }: {
+          item: CalendarDayMetadata;
+          index: number;
+        }) => {
           const isSelected = day.id === selectedDateId;
           const isToday = day.id === todayId;
           const handlePress = () => handleDayPress(day.id);
 
           if (renderDay) {
             return (
-              <View style={{ width: dayWidth, marginHorizontal: daySpacing / 2 }}>
+              <View
+                style={{ width: dayWidth, marginHorizontal: daySpacing / 2 }}
+              >
                 {renderDay({
                   day,
                   isSelected,
@@ -338,9 +335,7 @@ export const DayStripCalendar = memo(
                   index,
                   previousDay: index > 0 ? dayList[index - 1] : undefined,
                   nextDay:
-                    index < dayList.length - 1
-                      ? dayList[index + 1]
-                      : undefined,
+                    index < dayList.length - 1 ? dayList[index + 1] : undefined,
                   onPress: handlePress,
                 })}
               </View>
@@ -351,14 +346,14 @@ export const DayStripCalendar = memo(
             <View style={{ marginHorizontal: daySpacing / 2 }}>
               <DefaultDayCell
                 day={day}
+                dayHeight={dayHeight}
+                dayWidth={dayWidth}
                 isSelected={isSelected}
                 isToday={isToday}
                 onPress={handlePress}
-                dayWidth={dayWidth}
-                dayHeight={dayHeight}
                 showWeekDayName={showWeekDayName}
-                weekDayName={getWeekDayName(day.date)}
                 theme={theme}
+                weekDayName={getWeekDayName(day.date)}
               />
             </View>
           );
@@ -401,19 +396,15 @@ export const DayStripCalendar = memo(
             ? 6
             : dayOfWeek - 1;
 
-        const weekStartIdx = (targetIdx >= 0 ? targetIdx : referenceIndex) - weekStartOffset;
+        const weekStartIdx =
+          (targetIdx >= 0 ? targetIdx : referenceIndex) - weekStartOffset;
         const weekDays = dayList.slice(
           Math.max(0, weekStartIdx),
           Math.max(0, weekStartIdx) + 7
         );
 
         return (
-          <View
-            style={[
-              defaultStyles.staticWeekContainer,
-              theme?.container,
-            ]}
-          >
+          <View style={[defaultStyles.staticWeekContainer, theme?.container]}>
             {weekDays.map((day, i) => {
               const isSelected = day.id === selectedDateId;
               const isToday = day.id === todayId;
@@ -429,9 +420,7 @@ export const DayStripCalendar = memo(
                       index: i,
                       previousDay: i > 0 ? weekDays[i - 1] : undefined,
                       nextDay:
-                        i < weekDays.length - 1
-                          ? weekDays[i + 1]
-                          : undefined,
+                        i < weekDays.length - 1 ? weekDays[i + 1] : undefined,
                       onPress: handlePress,
                     })}
                   </View>
@@ -442,14 +431,14 @@ export const DayStripCalendar = memo(
                 <View key={day.id} style={{ flex: 1, alignItems: "center" }}>
                   <DefaultDayCell
                     day={day}
+                    dayHeight={dayHeight}
+                    dayWidth={dayWidth}
                     isSelected={isSelected}
                     isToday={isToday}
                     onPress={handlePress}
-                    dayWidth={dayWidth}
-                    dayHeight={dayHeight}
                     showWeekDayName={showWeekDayName}
-                    weekDayName={getWeekDayName(day.date)}
                     theme={theme}
+                    weekDayName={getWeekDayName(day.date)}
                   />
                 </View>
               );
@@ -462,22 +451,22 @@ export const DayStripCalendar = memo(
       return (
         <View style={[defaultStyles.container, theme?.container]}>
           <FlashList
-            ref={flashListRef}
-            data={dayList}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            initialScrollIndex={referenceIndex}
-            snapToInterval={itemSize}
-            decelerationRate="fast"
             contentContainerStyle={{
               paddingHorizontal: centerPadding,
             }}
+            data={dayList}
+            decelerationRate="fast"
             extraData={selectedDateId}
+            horizontal
+            initialScrollIndex={referenceIndex}
+            keyExtractor={keyExtractor}
             onLoad={handleListLoad}
-            onScrollBeginDrag={handleScrollBeginDrag}
             onMomentumScrollEnd={handleMomentumScrollEnd}
+            onScrollBeginDrag={handleScrollBeginDrag}
+            ref={flashListRef}
+            renderItem={renderItem}
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={itemSize}
           />
         </View>
       );

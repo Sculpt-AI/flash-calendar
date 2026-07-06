@@ -8,7 +8,7 @@ import {
   type CalendarDayMetadata,
   type CalendarListProps,
   type CalendarTheme,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import { memo, useEffect } from "react";
 
 import useWeeklyCalendar from "./useWeeklyCalendar";

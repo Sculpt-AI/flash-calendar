@@ -8,7 +8,10 @@ import {
   subDays,
   toDateId,
 } from "@/helpers/dates";
-import type { CalendarActiveDateRange, CalendarDayMetadata } from "@/hooks/useCalendar";
+import type {
+  CalendarActiveDateRange,
+  CalendarDayMetadata,
+} from "@/hooks/useCalendar";
 import { getStateFields } from "@/hooks/useCalendar";
 
 export interface UseDayStripParams {
@@ -69,9 +72,7 @@ export function useDayStrip(params: UseDayStripParams = {}): UseDayStripReturn {
   return useMemo(() => {
     const today = new Date();
     const todayId = toDateId(today);
-    const referenceDate = referenceDateId
-      ? fromDateId(referenceDateId)
-      : today;
+    const referenceDate = referenceDateId ? fromDateId(referenceDateId) : today;
 
     const totalDays = pastDayCount + 1 + futureDayCount;
     const startDate = subDays(referenceDate, pastDayCount);
@@ -92,11 +93,8 @@ export function useDayStrip(params: UseDayStripParams = {}): UseDayStripReturn {
         id,
         isDifferentMonth: false,
         isEndOfMonth:
-          new Date(
-            date.getFullYear(),
-            date.getMonth() + 1,
-            0
-          ).getDate() === date.getDate(),
+          new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() ===
+          date.getDate(),
         isEndOfWeek: dayOfWeek === endOfWeekIndex,
         isStartOfMonth: date.getDate() === 1,
         isStartOfWeek: dayOfWeek === startOfWeekIndex,

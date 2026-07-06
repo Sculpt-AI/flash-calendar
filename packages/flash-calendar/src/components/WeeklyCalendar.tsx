@@ -10,13 +10,7 @@ import {
   useRef,
 } from "react";
 import type { ViewToken, ViewStyle, TextStyle } from "react-native";
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { CalendarDayMetadata } from "@/hooks/useCalendar";
 import { toDateId } from "@/helpers/dates";
@@ -196,11 +190,7 @@ const DefaultWeekRow = memo(function DefaultWeekRow({
 }) {
   return (
     <View
-      style={[
-        defaultStyles.weekRow,
-        { width: screenWidth },
-        theme?.weekRow,
-      ]}
+      style={[defaultStyles.weekRow, { width: screenWidth }, theme?.weekRow]}
     >
       {week.map((day, weekDayIndex) => {
         const isSelected = day.id === selectedDateId;
@@ -224,12 +214,12 @@ const DefaultWeekRow = memo(function DefaultWeekRow({
 
         return (
           <DefaultDayCell
-            key={day.id}
             day={day}
+            dayHeight={dayHeight}
             isSelected={isSelected}
             isToday={isToday}
+            key={day.id}
             onPress={handlePress}
-            dayHeight={dayHeight}
             theme={theme}
           />
         );
@@ -241,177 +231,175 @@ const DefaultWeekRow = memo(function DefaultWeekRow({
 // --- WeeklyCalendar ---
 
 export const WeeklyCalendar = memo(
-  forwardRef<WeeklyCalendarRef, WeeklyCalendarProps>(
-    function WeeklyCalendar(
-      {
-        calendarFirstDayOfWeek = "sunday",
-        calendarPastScrollRangeInMonths,
-        calendarFutureScrollRangeInMonths,
-        selectedDateId: selectedDateIdProp,
-        onDayPress,
-        onWeekChanged,
-        showWeekDayNames = true,
-        dayHeight = 48,
-        weekDayNameHeight = 32,
+  forwardRef<WeeklyCalendarRef, WeeklyCalendarProps>(function WeeklyCalendar(
+    {
+      calendarFirstDayOfWeek = "sunday",
+      calendarPastScrollRangeInMonths,
+      calendarFutureScrollRangeInMonths,
+      selectedDateId: selectedDateIdProp,
+      onDayPress,
+      onWeekChanged,
+      showWeekDayNames = true,
+      dayHeight = 48,
+      weekDayNameHeight = 32,
+      renderDay,
+      renderWeek,
+      renderWeekDayName,
+      theme,
+      ...calendarParams
+    },
+    ref
+  ) {
+    const todayId = useMemo(() => toDateId(new Date()), []);
+    const selectedDateId = selectedDateIdProp ?? todayId;
+    const flashListRef = useRef<FlashListRef<CalendarDayMetadata[]>>(null);
+
+    const { weekDaysList, weekList } = useWeeklyCalendar({
+      calendarFirstDayOfWeek,
+      calendarPastScrollRangeInMonths,
+      calendarFutureScrollRangeInMonths,
+      ...calendarParams,
+    });
+
+    const handleDayPress = useCallback(
+      (dateId: string) => {
+        onDayPress?.(dateId);
+      },
+      [onDayPress]
+    );
+
+    // Stable ref for onViewableItemsChanged (FlashList requirement)
+    const onWeekChangedRef = useRef(onWeekChanged);
+    onWeekChangedRef.current = onWeekChanged;
+
+    const handleViewableItemsChanged = useRef(
+      ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+        const visible = viewableItems.find((i) => i.isViewable);
+        if (visible?.item) {
+          onWeekChangedRef.current?.(visible.item as CalendarDayMetadata[]);
+        }
+      }
+    ).current;
+
+    const viewabilityConfig = useRef({
+      itemVisiblePercentThreshold: 50,
+    }).current;
+
+    useImperativeHandle(ref, () => ({
+      scrollToDate(dateId: string, animated = true) {
+        const index = weekList.findIndex((week) =>
+          week.some((day) => day.id === dateId)
+        );
+        if (index >= 0 && flashListRef.current) {
+          flashListRef.current.scrollToIndex({ index, animated });
+        }
+      },
+    }));
+
+    const renderItem = useCallback(
+      ({ item: week }: { item: CalendarDayMetadata[] }) => {
+        if (renderWeek) {
+          return (
+            <View style={{ width: screenWidth }}>
+              {renderWeek({
+                week,
+                selectedDateId,
+                todayId,
+                onDayPress: handleDayPress,
+              })}
+            </View>
+          );
+        }
+
+        return (
+          <DefaultWeekRow
+            dayHeight={dayHeight}
+            onDayPress={handleDayPress}
+            renderDay={renderDay}
+            selectedDateId={selectedDateId}
+            theme={theme}
+            todayId={todayId}
+            week={week}
+          />
+        );
+      },
+      [
+        selectedDateId,
+        todayId,
+        handleDayPress,
+        dayHeight,
+        theme,
         renderDay,
         renderWeek,
-        renderWeekDayName,
-        theme,
-        ...calendarParams
-      },
-      ref
-    ) {
-      const todayId = useMemo(() => toDateId(new Date()), []);
-      const selectedDateId = selectedDateIdProp ?? todayId;
-      const flashListRef = useRef<FlashListRef<CalendarDayMetadata[]>>(null);
+      ]
+    );
 
-      const { weekDaysList, weekList } = useWeeklyCalendar({
-        calendarFirstDayOfWeek,
-        calendarPastScrollRangeInMonths,
-        calendarFutureScrollRangeInMonths,
-        ...calendarParams,
-      });
-
-      const handleDayPress = useCallback(
-        (dateId: string) => {
-          onDayPress?.(dateId);
-        },
-        [onDayPress]
+    const initialIndex = useMemo(() => {
+      const idx = weekList.findIndex((week) =>
+        week.some((day) => day.id === todayId)
       );
+      return idx >= 0 ? idx : 0;
+    }, [weekList, todayId]);
 
-      // Stable ref for onViewableItemsChanged (FlashList requirement)
-      const onWeekChangedRef = useRef(onWeekChanged);
-      onWeekChangedRef.current = onWeekChanged;
+    const keyExtractor = useCallback(
+      (item: CalendarDayMetadata[]) => item[0]?.id ?? "",
+      []
+    );
 
-      const handleViewableItemsChanged = useRef(
-        ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-          const visible = viewableItems.find((i) => i.isViewable);
-          if (visible?.item) {
-            onWeekChangedRef.current?.(visible.item as CalendarDayMetadata[]);
-          }
-        }
-      ).current;
-
-      const viewabilityConfig = useRef({
-        itemVisiblePercentThreshold: 50,
-      }).current;
-
-      useImperativeHandle(ref, () => ({
-        scrollToDate(dateId: string, animated = true) {
-          const index = weekList.findIndex((week) =>
-            week.some((day) => day.id === dateId)
-          );
-          if (index >= 0 && flashListRef.current) {
-            flashListRef.current.scrollToIndex({ index, animated });
-          }
-        },
-      }));
-
-      const renderItem = useCallback(
-        ({ item: week }: { item: CalendarDayMetadata[] }) => {
-          if (renderWeek) {
-            return (
-              <View style={{ width: screenWidth }}>
-                {renderWeek({
-                  week,
-                  selectedDateId,
-                  todayId,
-                  onDayPress: handleDayPress,
-                })}
-              </View>
-            );
-          }
-
-          return (
-            <DefaultWeekRow
-              week={week}
-              selectedDateId={selectedDateId}
-              todayId={todayId}
-              onDayPress={handleDayPress}
-              dayHeight={dayHeight}
-              theme={theme}
-              renderDay={renderDay}
-            />
-          );
-        },
-        [
-          selectedDateId,
-          todayId,
-          handleDayPress,
-          dayHeight,
-          theme,
-          renderDay,
-          renderWeek,
-        ]
-      );
-
-      const initialIndex = useMemo(() => {
-        const idx = weekList.findIndex((week) =>
-          week.some((day) => day.id === todayId)
-        );
-        return idx >= 0 ? idx : 0;
-      }, [weekList, todayId]);
-
-      const keyExtractor = useCallback(
-        (item: CalendarDayMetadata[]) => item[0]?.id ?? "",
-        []
-      );
-
-      return (
-        <View style={[defaultStyles.container, theme?.container]}>
-          {showWeekDayNames && (
-            <View
-              style={[
-                defaultStyles.weekDayNamesContainer,
-                theme?.weekDayNamesContainer,
-              ]}
-            >
-              {weekDaysList.map((name, index) =>
-                renderWeekDayName ? (
-                  <View key={index} style={defaultStyles.dayWrapper}>
-                    {renderWeekDayName({ name, index })}
-                  </View>
-                ) : (
-                  <View
-                    key={index}
+    return (
+      <View style={[defaultStyles.container, theme?.container]}>
+        {showWeekDayNames && (
+          <View
+            style={[
+              defaultStyles.weekDayNamesContainer,
+              theme?.weekDayNamesContainer,
+            ]}
+          >
+            {weekDaysList.map((name, index) =>
+              renderWeekDayName ? (
+                <View key={index} style={defaultStyles.dayWrapper}>
+                  {renderWeekDayName({ name, index })}
+                </View>
+              ) : (
+                <View
+                  key={index}
+                  style={[
+                    defaultStyles.weekDayNameCell,
+                    { height: weekDayNameHeight },
+                    theme?.weekDayNameCell,
+                  ]}
+                >
+                  <Text
                     style={[
-                      defaultStyles.weekDayNameCell,
-                      { height: weekDayNameHeight },
-                      theme?.weekDayNameCell,
+                      defaultStyles.weekDayNameText,
+                      theme?.weekDayNameText,
                     ]}
                   >
-                    <Text
-                      style={[
-                        defaultStyles.weekDayNameText,
-                        theme?.weekDayNameText,
-                      ]}
-                    >
-                      {name}
-                    </Text>
-                  </View>
-                )
-              )}
-            </View>
-          )}
-          <View style={{ height: dayHeight }}>
-            <FlashList
-              ref={flashListRef}
-              data={weekList}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              renderItem={renderItem}
-              initialScrollIndex={initialIndex}
-              onViewableItemsChanged={handleViewableItemsChanged}
-              viewabilityConfig={viewabilityConfig}
-              keyExtractor={keyExtractor}
-              extraData={selectedDateId}
-            />
+                    {name}
+                  </Text>
+                </View>
+              )
+            )}
           </View>
+        )}
+        <View style={{ height: dayHeight }}>
+          <FlashList
+            data={weekList}
+            extraData={selectedDateId}
+            horizontal
+            initialScrollIndex={initialIndex}
+            keyExtractor={keyExtractor}
+            onViewableItemsChanged={handleViewableItemsChanged}
+            pagingEnabled
+            ref={flashListRef}
+            renderItem={renderItem}
+            showsHorizontalScrollIndicator={false}
+            viewabilityConfig={viewabilityConfig}
+          />
         </View>
-      );
-    }
-  )
+      </View>
+    );
+  })
 );
 
 const defaultStyles = StyleSheet.create({

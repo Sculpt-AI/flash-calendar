@@ -1,12 +1,12 @@
 import type {
   CalendarActiveDateRange,
   CalendarOnDayPress,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import {
   Calendar,
   fromDateId,
   toDateId,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import type { Meta } from "@storybook/react-native";
 import { add, formatDate, sub } from "date-fns";
 import { format } from "date-fns/fp";
@@ -86,7 +86,7 @@ export const WindowsXP = () => {
 
   return (
     <View style={styles.windowsXpBackground}>
-      <WindowsXpWindow title="@marceloterreiro/flash-calendar">
+      <WindowsXpWindow title="@sculpt-ai/flash-calendar">
         <Calendar.VStack justifyContent="flex-start" spacing={12}>
           <Text>
             This is a Windows's XP themed calendar, using the composable API

@@ -1,8 +1,8 @@
 import type {
   CalendarProps,
   CalendarTheme,
-} from "@marceloterreiro/flash-calendar";
-import { Calendar, useCalendar } from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
+import { Calendar, useCalendar } from "@sculpt-ai/flash-calendar";
 import { format } from "date-fns";
 import { memo, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";

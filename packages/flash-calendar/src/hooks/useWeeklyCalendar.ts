@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 
-import type { UseCalendarParams } from "@/hooks/useCalendar";
-import { buildCalendar, type CalendarDayMetadata } from "@/hooks/useCalendar";
+import { buildCalendar } from "@/hooks/useCalendar";
+import type {
+  CalendarDayMetadata,
+  UseCalendarParams,
+} from "@/hooks/useCalendar";
 import {
   useCalendarList,
   type UseCalendarListParams,

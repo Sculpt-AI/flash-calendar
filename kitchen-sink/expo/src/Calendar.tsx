@@ -1,4 +1,4 @@
-import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
+import { Calendar, toDateId } from "@sculpt-ai/flash-calendar";
 import { useState } from "react";
 import { Text } from "react-native";
 

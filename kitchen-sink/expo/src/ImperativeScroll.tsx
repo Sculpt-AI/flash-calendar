@@ -1,10 +1,10 @@
 import { addMonths, subMonths, startOfMonth } from "date-fns";
-import type { CalendarListRef } from "@marceloterreiro/flash-calendar";
+import type { CalendarListRef } from "@sculpt-ai/flash-calendar";
 import {
   Calendar,
   toDateId,
   fromDateId,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 import { useCallback, useRef, useState } from "react";
 import { Button, Text, View } from "react-native";
 

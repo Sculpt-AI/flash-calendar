@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@marceloterreiro/flash-calendar": ["../../packages/flash-calendar/src"],
+      "@sculpt-ai/flash-calendar": ["../../packages/flash-calendar/src"],
       "@/*": ["../../packages/flash-calendar/src/*"]
     },
     "esModuleInterop": true

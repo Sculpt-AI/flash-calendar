@@ -7,7 +7,7 @@ import {
   fromDateId,
   type CalendarDayMetadata,
   type WeeklyCalendarWeekRenderProps,
-} from "@marceloterreiro/flash-calendar";
+} from "@sculpt-ai/flash-calendar";
 
 /** Get the date ID for the day before/after a given date ID */
 function getAdjacentDateId(dateId: string, offset: number): string {
